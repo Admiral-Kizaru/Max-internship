@@ -1,0 +1,33 @@
+.skeleton-box {
+  height: 200px;
+  background: #e5e7eb;
+  border-radius: 10px;
+  animation: pulse 1.5s infinite;
+}
+
+.skeleton-circle {
+  width: 50px;
+  height: 50px;
+  background: #e5e7eb;
+  border-radius: 50%;
+  margin: 10px auto;
+  animation: pulse 1.5s infinite;
+}
+
+.skeleton-line {
+  height: 12px;
+  background: #e5e7eb;
+  margin: 6px 0;
+  border-radius: 4px;
+  animation: pulse 1.5s infinite;
+}
+
+.skeleton-line.short {
+  width: 60%;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}

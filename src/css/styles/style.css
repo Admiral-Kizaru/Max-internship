@@ -65,7 +65,10 @@ body .owl-stage .owl-item {
 }
 
 #wrapper {
-  overflow: hidden;
+  min-height: 100vh;
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .de-navbar-left #wrapper {
