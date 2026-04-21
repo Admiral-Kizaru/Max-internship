@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import AuthorImage from "../../images/author_thumbnail.jpg";
 import nftImage from "../../images/nftImage.jpg";
 
+const items = Array.from({ length: 8 }, (_, index) => ({ id: index + 1 }));
+
 const ExploreItems = () => {
   return (
     <>
@@ -14,9 +16,9 @@ const ExploreItems = () => {
           <option value="likes_high_to_low">Most liked</option>
         </select>
       </div>
-      {new Array(8).fill(0).map((_, index) => (
+      {items.map((item) => (
         <div
-          key={index}
+          key={item.id}
           className="d-item col-lg-3 col-md-6 col-sm-6 col-xs-12"
           style={{ display: "block", backgroundSize: "cover" }}
         >
@@ -51,12 +53,12 @@ const ExploreItems = () => {
                   </div>
                 </div>
               </div>
-              <Link to="/item-details">
+              <Link to={`/item-details/${item.id}`}>
                 <img src={nftImage} className="lazy nft__item_preview" alt="" />
               </Link>
             </div>
             <div className="nft__item_info">
-              <Link to="/item-details">
+              <Link to={`/item-details/${item.id}`}>
                 <h4>Pinky Ocean</h4>
               </Link>
               <div className="nft__item_price">1.74 ETH</div>

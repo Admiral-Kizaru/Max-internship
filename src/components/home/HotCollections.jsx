@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import collections from "../../hotCollections.json";
-
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 
@@ -9,31 +7,29 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-import "../../css/styles/skeleton.css";
-
 const HotCollections = () => {
+  const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setData(collections || []);
-      setLoading(false);
-    }, 1500);
+    const fetchCollections = async () => {
+      try {
+        const res = await fetch("/hotCollections.json");
 
-    return () => clearTimeout(timer);
+        if (!res.ok) throw new Error("Failed to load data");
+
+        const data = await res.json();
+
+        setCollections(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCollections();
   }, []);
-
-  const SkeletonCard = () => (
-    <div className="nft_coll">
-      <div className="nft_wrap skeleton-box" />
-      <div className="nft_coll_pp skeleton-circle" />
-      <div className="nft_coll_info">
-        <div className="skeleton-line short" />
-        <div className="skeleton-line" />
-      </div>
-    </div>
-  );
 
   return (
     <section id="section-collections" className="no-bottom">
@@ -50,8 +46,8 @@ const HotCollections = () => {
               spaceBetween={20}
               navigation
               pagination={{ clickable: true }}
-              autoplay={{ delay: 2500, disableOnInteraction: false }}
-              loop={true}
+              autoplay={{ delay: 2500 }}
+              loop={collections.length > 4}
               breakpoints={{
                 0: { slidesPerView: 1 },
                 600: { slidesPerView: 2 },
@@ -59,51 +55,45 @@ const HotCollections = () => {
               }}
             >
               {loading
-  ? Array.from({ length: 4 }).map((_, i) => (
-      <SwiperSlide key={i}>
-        <SkeletonCard />
-      </SwiperSlide>
-    ))
-  : data.map((item) => {
-      console.log("FULL ITEM:", item);
-      console.log("ITEM ID:", item.id);
+                ? null
+                : collections.map((item) => (
+                    <SwiperSlide key={item.id}>
+                      <div className="nft_coll">
 
-      return (
-        <SwiperSlide key={item.id}>
-          <div className="nft_coll">
+                        {/* IMAGE CLICK */}
+                        <div className="nft_wrap">
+                          <Link to={`/hot-collections/${item.id}`}>
+                            <img
+                              src={item.nftImage}
+                              className="img-fluid"
+                              alt={item.title}
+                            />
+                          </Link>
+                        </div>
 
-            <div className="nft_wrap">
-              <Link to={`/item-details/${item.nftId}`}>
-                <img
-                  src={item.nftImage}
-                  className="img-fluid"
-                  alt={item.title}
-                />
-              </Link>
-            </div>
+                        {/* AUTHOR */}
+                        <div className="nft_coll_pp">
+                          <Link to={`/author/${item.authorId}`}>
+                            <img
+                              className="pp-coll"
+                              src={item.authorImage}
+                              alt="author"
+                            />
+                          </Link>
+                          <i className="fa fa-check"></i>
+                        </div>
 
-            <div className="nft_coll_pp">
-              <Link to={`/author/${item.authorId}`}>
-                <img
-                  className="pp-coll"
-                  src={item.authorImage}
-                  alt="author"
-                />
-              </Link>
-              <i className="fa fa-check"></i>
-            </div>
+                        {/* TITLE */}
+                        <div className="nft_coll_info">
+                          <Link to={`/hot-collections/${item.id}`}>
+                            <h4>{item.title}</h4>
+                          </Link>
+                          <span>Code: {item.code}</span>
+                        </div>
 
-            <div className="nft_coll_info">
-              <Link to={`/item-details/${item.nftId}`}>
-                <h4>{item.title}</h4>
-              </Link>
-              <span>Code: {item.code}</span>
-            </div>
-
-          </div>
-        </SwiperSlide>
-      );
-    })}
+                      </div>
+                    </SwiperSlide>
+                  ))}
             </Swiper>
           </div>
         </div>
