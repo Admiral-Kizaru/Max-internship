@@ -14,8 +14,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/explore" element={<Explore />} />
-        <Route path="/author" element={<Author />} />
-        <Route path="/hot-collections/:id" element={<HotCollectionDetails />} />
+        <Route path="/author/:id" element={<Author />} />
+        <Route path="/collection/:id" element={<HotCollectionDetails />} />
         <Route path="/item-details/:id" element={<ItemDetails />} />
       </Routes>
       <Footer />

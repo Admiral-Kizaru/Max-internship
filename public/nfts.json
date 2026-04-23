@@ -1,0 +1,56 @@
+[
+  {
+    "id": 39924405,
+    "title": "Abstraction #1",
+    "nftImage": "https://nft-place.web.app/static/media/coll-1.b8f9d867e8ed59ee7fa7.jpg",
+    "collectionId": 1,
+    "authorId": 83937449,
+    "price": 0,
+    "likes": 0
+  },
+  {
+    "id": 85809749,
+    "title": "Patternlicious #2",
+    "nftImage": "https://nft-place.web.app/static/media/coll-2.f50ac8b33595d70f28f6.jpg",
+    "collectionId": 2,
+    "authorId": 73855012,
+    "price": 0,
+    "likes": 0
+  },
+  {
+    "id": 92982521,
+    "title": "Skecthify #3",
+    "nftImage": "https://nft-place.web.app/static/media/coll-3.5cf44b8fe602daac453e.jpg",
+    "collectionId": 3,
+    "authorId": 49986179,
+    "price": 0,
+    "likes": 0
+  },
+  {
+    "id": 33988060,
+    "title": "Cartoonism #4",
+    "nftImage": "https://nft-place.web.app/static/media/coll-4.ce394fcfef6b2f9a21fe.jpg",
+    "collectionId": 4,
+    "authorId": 90432259,
+    "price": 0,
+    "likes": 0
+  },
+  {
+    "id": 85416297,
+    "title": "Virtuland #5",
+    "nftImage": "https://nft-place.web.app/static/media/coll-5.8cda59d9f6c8d1570e02.jpg",
+    "collectionId": 5,
+    "authorId": 40460691,
+    "price": 0,
+    "likes": 0
+  },
+  {
+    "id": 33908428,
+    "title": "Papercut #6",
+    "nftImage": "https://nft-place.web.app/static/media/coll-6.05fd27315e8e537c9193.jpg",
+    "collectionId": 6,
+    "authorId": 87818782,
+    "price": 0,
+    "likes": 0
+  }
+]

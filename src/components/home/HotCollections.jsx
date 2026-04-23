@@ -19,7 +19,6 @@ const HotCollections = () => {
         if (!res.ok) throw new Error("Failed to load data");
 
         const data = await res.json();
-
         setCollections(data);
       } catch (err) {
         console.error(err);
@@ -60,9 +59,9 @@ const HotCollections = () => {
                     <SwiperSlide key={item.id}>
                       <div className="nft_coll">
 
-                        {/* IMAGE CLICK */}
+                        {/* 🔥 CLICK COLLECTION (NOT NFT) */}
                         <div className="nft_wrap">
-                          <Link to={`/hot-collections/${item.id}`}>
+                          <Link to={`/collection/${item.id}`}>
                             <img
                               src={item.nftImage}
                               className="img-fluid"
@@ -83,12 +82,17 @@ const HotCollections = () => {
                           <i className="fa fa-check"></i>
                         </div>
 
-                        {/* TITLE */}
+                        {/* INFO */}
                         <div className="nft_coll_info">
-                          <Link to={`/hot-collections/${item.id}`}>
+                          <Link to={`/collection/${item.id}`}>
                             <h4>{item.title}</h4>
                           </Link>
+
                           <span>Code: {item.code}</span>
+
+                          <div style={{ fontSize: "12px", marginTop: "4px" }}>
+                            Collection ID: {item.id}
+                          </div>
                         </div>
 
                       </div>
