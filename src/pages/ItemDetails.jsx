@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import EthImage from "../images/ethereum.svg";
 import WOW from "wowjs";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Skeleton from "../components/UI/Skeleton";
 
 const ItemDetails = () => {
@@ -13,33 +13,18 @@ const ItemDetails = () => {
 
   const getNftItem = async () => {
     try {
-      if (!id) throw new Error("Missing NFT ID");
-
       setLoading(true);
       setError(null);
 
-      // ✅ FETCH BOTH FILES FROM PUBLIC
-      const [itemsRes, hotRes] = await Promise.all([
-        fetch("/newItems.json"),
-        fetch("/hotCollections.json"),
-      ]);
+      const res = await fetch("/itemDetails.json");
 
-      if (!itemsRes.ok || !hotRes.ok) {
-        throw new Error("Failed to load JSON");
+      if (!res.ok) {
+        throw new Error("Failed to load item details");
       }
 
-      const itemsData = await itemsRes.json();
-      const hotData = await hotRes.json();
+      const data = await res.json();
 
-      const allItems = [...itemsData, ...hotData];
-
-      const foundItem = allItems.find(
-        (item) => String(item.id) === String(id)
-      );
-
-      if (!foundItem) throw new Error("NFT not found");
-
-      setNftItem(foundItem);
+      setNftItem(data);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -78,27 +63,82 @@ const ItemDetails = () => {
     <div id="wrapper">
       <section className="mt90 sm-mt-0">
         <div className="container">
-          <div className="row">
+          <div className="row align-items-start">
 
-            <div className="col-md-6 text-center">
+            <div className="col-md-6">
               <img
                 src={nftItem.nftImage}
-                className="img-fluid img-rounded nft-image"
                 alt={nftItem.title}
+                style={{
+                  width: "100%",
+                  maxHeight: "520px",
+                  objectFit: "cover",
+                }}
               />
             </div>
 
             <div className="col-md-6">
-              <h2>{nftItem.title} #{nftItem.tag}</h2>
+              <h1 style={{ fontWeight: "700", marginBottom: "15px" }}>
+                {nftItem.title} #{nftItem.tag}
+              </h1>
 
-              <p>{nftItem.description}</p>
+              <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+                <span style={{ background: "#f3f0ff", padding: "5px 14px" }}>
+                  <i className="fa fa-eye"></i> {nftItem.views}
+                </span>
 
-              <h6>Price</h6>
-              <div className="nft-item-price">
-                <img src={EthImage} alt="eth" />
-                <span>{nftItem.price}</span>
+                <span style={{ background: "#f3f0ff", padding: "5px 14px" }}>
+                  <i className="fa fa-heart"></i> {nftItem.likes}
+                </span>
               </div>
 
+              <p style={{ maxWidth: "520px", lineHeight: "1.7" }}>
+                {nftItem.description}
+              </p>
+
+              <h6 style={{ marginTop: "22px", fontWeight: "700" }}>Owner</h6>
+              <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                <img
+                  src={nftItem.ownerImage}
+                  alt={nftItem.ownerName}
+                  style={{
+                    width: "45px",
+                    height: "45px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                />
+
+                <Link to={`/author/${nftItem.ownerId}`} style={{ fontWeight: "700" }}>
+                  {nftItem.ownerName}
+                </Link>
+              </div>
+
+              <h6 style={{ marginTop: "18px", fontWeight: "700" }}>Creator</h6>
+              <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                <img
+                  src={nftItem.creatorImage}
+                  alt={nftItem.creatorName}
+                  style={{
+                    width: "45px",
+                    height: "45px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                />
+
+                <Link to={`/author/${nftItem.creatorId}`} style={{ fontWeight: "700" }}>
+                  {nftItem.creatorName}
+                </Link>
+              </div>
+
+              <h6 style={{ marginTop: "25px", fontWeight: "700" }}>Price</h6>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <img src={EthImage} alt="eth" style={{ width: "24px" }} />
+                <span style={{ fontSize: "28px", fontWeight: "700" }}>
+                  {nftItem.price}
+                </span>
+              </div>
             </div>
 
           </div>
