@@ -18,19 +18,23 @@ const ItemDetails = () => {
     setLoading(true);
     setError(null);
 
-    const res = await fetch("/newItems.fixed.json");
+    const [exploreRes, newItemsRes] = await Promise.all([
+      fetch("/explore.json"),
+      fetch("/newItems.fixed.json"),
+    ]);
 
-    if (!res.ok) {
-      throw new Error("Failed to load data");
+    if (!exploreRes.ok || !newItemsRes.ok) {
+      throw new Error("Failed to load NFT data");
     }
 
-    const data = await res.json();
+    const exploreData = await exploreRes.json();
+    const newItemsData = await newItemsRes.json();
 
-    const foundItem = Array.isArray(data)
-      ? data.find((item) => String(item.nftId) === String(id))
-      : String(data.nftId) === String(id)
-        ? data
-        : null;
+    const allItems = [...exploreData, ...newItemsData];
+
+    const foundItem = allItems.find(
+      (item) => String(item.nftId) === String(id)
+    );
 
     if (!foundItem) throw new Error("NFT not found");
 
