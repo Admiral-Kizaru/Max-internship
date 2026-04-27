@@ -11,13 +11,19 @@ const HotCollectionDetails = () => {
 
   const { id } = useParams();
 
+ useEffect(() => {
   const getCollectionDetails = async () => {
     try {
+      if (!id) throw new Error("Missing collection ID");
+
       setLoading(true);
       setError(null);
 
       const response = await fetch("/hotCollections.json");
-      if (!response.ok) throw new Error("Failed to load collections");
+
+      if (!response.ok) {
+        throw new Error("Failed to load collections");
+      }
 
       const collections = await response.json();
 
@@ -37,14 +43,15 @@ const HotCollectionDetails = () => {
     }
   };
 
+  getCollectionDetails();
+}, [id]);
+
   useEffect(() => {
     new WOW.WOW({ live: false }).init();
     window.scrollTo(0, 0);
   }, []);
 
-  useEffect(() => {
-    getCollectionDetails();
-  }, [id]);
+ 
 
   if (error) {
     return (
