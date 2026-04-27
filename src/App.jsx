@@ -16,7 +16,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/explore" element={<Explore />} />
         <Route path="/author/:id" element={<Author />} />
-        <Route path="/nft/:id" element={<NFTDetails />} />
+       <Route path="/nft/:id" element={<ItemDetails />} />
         <Route path="/collection/:id" element={<HotCollectionDetails />} />
         <Route path="/item-details/:id" element={<ItemDetails />} />
       </Routes>

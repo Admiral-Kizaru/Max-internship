@@ -94,7 +94,7 @@ const ExploreItems = ({ sortBy = "default" }) => {
       </div>
 
       <div className="nft__item_wrap custom-image-wrap">
-        <Link to={`/nft/${item.id}`}>
+        <Link to={`/nft/${item.nftId}`}>
           <img
             src={item.nftImage || nftImage}
             alt={item.title}
@@ -104,7 +104,7 @@ const ExploreItems = ({ sortBy = "default" }) => {
       </div>
 
       <div className="nft__item_info custom-nft-info">
-        <Link to={`/nft/${item.id}`}>
+        <Link to={`/nft/${item.nftId}`}>
           <h4>{item.title}</h4>
         </Link>
 
