@@ -6,7 +6,6 @@ import ItemDetails from "./pages/ItemDetails";
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import HotCollectionDetails from "./pages/HotCollectionDetails";
-import NFTDetails from "./pages/NFTDetails";
 
 function App() {
   return (
