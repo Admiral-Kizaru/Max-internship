@@ -9,6 +9,22 @@ const ExploreItems = ({
   search = "",
 }) => {
   const [visibleCount, setVisibleCount] = useState(8);
+  const [authors, setAuthors] = useState([]);
+
+  useEffect(() => {
+    const fetchAuthors = async () => {
+      try {
+        const res = await fetch("/authors.json");
+        const data = await res.json();
+
+        setAuthors(Array.isArray(data) ? data : [data]);
+      } catch (err) {
+        console.error("Failed to load authors", err);
+      }
+    };
+
+    fetchAuthors();
+  }, []);
 
   useEffect(() => {
     setVisibleCount(8);
@@ -67,46 +83,55 @@ const ExploreItems = ({
 
   return (
     <>
-      {visibleItems.map((item) => (
-        <div key={item.id} className="col-lg-3 col-md-6 col-sm-6">
-          <div className="nft__item custom-nft-card">
-            <div className="author-avatar">
-              <Link to={`/author/${item.authorId}`}>
-                <img src={item.authorImage} alt="author" />
-              </Link>
+      {visibleItems.map((item) => {
+        const author = authors.find(
+          (a) => String(a.authorId) === String(item.authorId)
+        );
 
-              <span className="verified-badge">
-                <i className="fa fa-check"></i>
-              </span>
-            </div>
+        return (
+          <div key={item.id} className="col-lg-3 col-md-6 col-sm-6">
+            <div className="nft__item custom-nft-card">
+              <div className="author-avatar">
+                <Link to={`/author/${author?.authorId || item.authorId}`}>
+                  <img
+                    src={author?.authorImage || item.authorImage}
+                    alt={author?.authorName || "author"}
+                  />
+                </Link>
 
-            <div className="nft__item_wrap custom-image-wrap">
-              <Link to={`/nft/${item.nftId}`}>
-                <img
-                  src={item.nftImage || nftImage}
-                  alt={item.title}
-                  className="nft__item_preview"
-                />
-              </Link>
-            </div>
+                <span className="verified-badge">
+                  <i className="fa fa-check"></i>
+                </span>
+              </div>
 
-            <div className="nft__item_info custom-nft-info">
-              <Link to={`/nft/${item.nftId}`}>
-                <h4>{item.title}</h4>
-              </Link>
+              <div className="nft__item_wrap custom-image-wrap">
+                <Link to={`/nft/${item.nftId}`}>
+                  <img
+                    src={item.nftImage || nftImage}
+                    alt={item.title}
+                    className="nft__item_preview"
+                  />
+                </Link>
+              </div>
 
-              <div className="nft-bottom-row">
-                <div className="nft__item_price">{item.price} ETH</div>
+              <div className="nft__item_info custom-nft-info">
+                <Link to={`/nft/${item.nftId}`}>
+                  <h4>{item.title}</h4>
+                </Link>
 
-                <div className="nft__item_like">
-                  <i className="fa fa-heart"></i>
-                  <span>{item.likes}</span>
+                <div className="nft-bottom-row">
+                  <div className="nft__item_price">{item.price} ETH</div>
+
+                  <div className="nft__item_like">
+                    <i className="fa fa-heart"></i>
+                    <span>{item.likes}</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
 
       {visibleItems.length === 0 && (
         <div className="col-12 text-center mt-4">
