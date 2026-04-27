@@ -12,25 +12,35 @@ const ItemDetails = () => {
   const { id } = useParams();
 
   const getNftItem = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  try {
+    if (!id) throw new Error("Missing NFT ID");
 
-      const res = await fetch("/itemDetails.json");
+    setLoading(true);
+    setError(null);
 
-      if (!res.ok) {
-        throw new Error("Failed to load item details");
-      }
+    const res = await fetch("/newItems.fixed.json");
 
-      const data = await res.json();
-
-      setNftItem(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    if (!res.ok) {
+      throw new Error("Failed to load data");
     }
-  };
+
+    const data = await res.json();
+
+    const foundItem = Array.isArray(data)
+      ? data.find((item) => String(item.nftId) === String(id))
+      : String(data.nftId) === String(id)
+        ? data
+        : null;
+
+    if (!foundItem) throw new Error("NFT not found");
+
+    setNftItem(foundItem);
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     new WOW.WOW({ live: false }).init();
@@ -79,7 +89,7 @@ const ItemDetails = () => {
 
             <div className="col-md-6">
               <h1 style={{ fontWeight: "700", marginBottom: "15px" }}>
-                {nftItem.title} #{nftItem.tag}
+                {nftItem.title} #{nftItem.nftId}
               </h1>
 
               <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>

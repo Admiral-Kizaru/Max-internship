@@ -196,7 +196,7 @@ const NewItems = () => {
                           )}
 
                           {/* IMAGE */}
-                          <Link to={`/item-details/${item.id}`}>
+                         <Link to={`/nft/${item.nftId}`}>
                             <img
                               src={item.nftImage}
                               alt={item.title}
@@ -207,7 +207,7 @@ const NewItems = () => {
 
                         {/* INFO */}
                         <div className="nft__item_info">
-                          <Link to={`/item-details/${item.id}`}>
+                          <Link to={`/nft/${item.nftId}`}>
                             <h4>{item.title}</h4>
                           </Link>
 
