@@ -12,39 +12,39 @@ const ItemDetails = () => {
   const { id } = useParams();
 
   const getNftItem = async () => {
-  try {
-    if (!id) throw new Error("Missing NFT ID");
+    try {
+      if (!id) throw new Error("Missing NFT ID");
 
-    setLoading(true);
-    setError(null);
+      setLoading(true);
+      setError(null);
 
-    const [exploreRes, newItemsRes] = await Promise.all([
-      fetch("/explore.json"),
-      fetch("/newItems.fixed.json"),
-    ]);
+      const [exploreRes, newItemsRes] = await Promise.all([
+        fetch("/explore.json"),
+        fetch("/newItems.fixed.json"),
+      ]);
 
-    if (!exploreRes.ok || !newItemsRes.ok) {
-      throw new Error("Failed to load NFT data");
+      if (!exploreRes.ok || !newItemsRes.ok) {
+        throw new Error("Failed to load NFT data");
+      }
+
+      const exploreData = await exploreRes.json();
+      const newItemsData = await newItemsRes.json();
+
+      const allItems = [...exploreData, ...newItemsData];
+
+      const foundItem = allItems.find(
+        (item) => String(item.nftId) === String(id)
+      );
+
+      if (!foundItem) throw new Error("NFT not found");
+
+      setNftItem(foundItem);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-
-    const exploreData = await exploreRes.json();
-    const newItemsData = await newItemsRes.json();
-
-    const allItems = [...exploreData, ...newItemsData];
-
-    const foundItem = allItems.find(
-      (item) => String(item.nftId) === String(id)
-    );
-
-    if (!foundItem) throw new Error("NFT not found");
-
-    setNftItem(foundItem);
-  } catch (err) {
-    setError(err.message);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   useEffect(() => {
     new WOW.WOW({ live: false }).init();
@@ -73,12 +73,19 @@ const ItemDetails = () => {
     );
   }
 
+  const ownerImage = nftItem.ownerImage || nftItem.authorImage;
+  const ownerName = nftItem.ownerName || nftItem.authorName || "View Owner";
+  const ownerId = nftItem.ownerId || nftItem.authorId;
+
+  const creatorImage = nftItem.creatorImage || nftItem.authorImage;
+  const creatorName = nftItem.creatorName || nftItem.authorName || "View Creator";
+  const creatorId = nftItem.creatorId || nftItem.authorId;
+
   return (
     <div id="wrapper">
       <section className="mt90 sm-mt-0">
         <div className="container">
           <div className="row align-items-start">
-
             <div className="col-md-6">
               <img
                 src={nftItem.nftImage}
@@ -98,7 +105,7 @@ const ItemDetails = () => {
 
               <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
                 <span style={{ background: "#f3f0ff", padding: "5px 14px" }}>
-                  <i className="fa fa-eye"></i> {nftItem.views}
+                  <i className="fa fa-eye"></i> {nftItem.views || 0}
                 </span>
 
                 <span style={{ background: "#f3f0ff", padding: "5px 14px" }}>
@@ -107,14 +114,14 @@ const ItemDetails = () => {
               </div>
 
               <p style={{ maxWidth: "520px", lineHeight: "1.7" }}>
-                {nftItem.description}
+                {nftItem.description || "No description available."}
               </p>
 
               <h6 style={{ marginTop: "22px", fontWeight: "700" }}>Owner</h6>
               <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
                 <img
-                  src={nftItem.ownerImage}
-                  alt={nftItem.ownerName}
+                  src={ownerImage}
+                  alt={ownerName}
                   style={{
                     width: "45px",
                     height: "45px",
@@ -123,16 +130,16 @@ const ItemDetails = () => {
                   }}
                 />
 
-                <Link to={`/author/${nftItem.ownerId}`} style={{ fontWeight: "700" }}>
-                  {nftItem.ownerName}
+                <Link to={`/author/${ownerId}`} style={{ fontWeight: "700" }}>
+                  {ownerName}
                 </Link>
               </div>
 
               <h6 style={{ marginTop: "18px", fontWeight: "700" }}>Creator</h6>
               <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
                 <img
-                  src={nftItem.creatorImage}
-                  alt={nftItem.creatorName}
+                  src={creatorImage}
+                  alt={creatorName}
                   style={{
                     width: "45px",
                     height: "45px",
@@ -141,8 +148,8 @@ const ItemDetails = () => {
                   }}
                 />
 
-                <Link to={`/author/${nftItem.creatorId}`} style={{ fontWeight: "700" }}>
-                  {nftItem.creatorName}
+                <Link to={`/author/${creatorId}`} style={{ fontWeight: "700" }}>
+                  {creatorName}
                 </Link>
               </div>
 
@@ -154,7 +161,6 @@ const ItemDetails = () => {
                 </span>
               </div>
             </div>
-
           </div>
         </div>
       </section>
