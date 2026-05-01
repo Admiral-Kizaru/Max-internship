@@ -13,7 +13,25 @@ import "swiper/css/pagination";
 const NewItems = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [timeLeft, setTimeLeft] = useState({});
+  const [timeNow, setTimeNow] = useState(Date.now());
+
+  const getTimeLeft = (expiryDate) => {
+    if (!expiryDate) return null;
+
+    const expiryTime = Number(expiryDate);
+    const diff = expiryTime - timeNow;
+
+    if (diff <= 0) return "Expired";
+
+    const totalSeconds = Math.floor(diff / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    const pad = (num) => String(num).padStart(2, "0");
+
+    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+  };
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -31,11 +49,18 @@ const NewItems = () => {
         const timerData = await resTimer.json();
 
         const merged = mainData.map((item) => {
-          const timerItem = timerData.find((t) => t.id === item.id);
+          const timerItem = timerData.find(
+            (t) =>
+              String(t.nftId) === String(item.nftId) ||
+              String(t.id) === String(item.id)
+          );
 
           return {
             ...item,
-            expiryDate: timerItem?.expiryDate || null,
+            expiryDate:
+  timerItem?.expiryDate && Number(timerItem.expiryDate) > Date.now()
+    ? Number(timerItem.expiryDate)
+    : Date.now() + 1000 * 60 * 60 * 24,
           };
         });
 
@@ -51,40 +76,12 @@ const NewItems = () => {
   }, []);
 
   useEffect(() => {
-    if (!items.length) return;
-
     const interval = setInterval(() => {
-      const now = Date.now();
-      const updated = {};
-
-      items.forEach((item) => {
-        if (!item.expiryDate) return;
-
-        const expiryTime = Number(item.expiryDate);
-        if (!expiryTime) return;
-
-        const diff = expiryTime - now;
-
-        if (diff <= 0) {
-          updated[item.id] = "Expired";
-          return;
-        }
-
-        const totalSeconds = Math.floor(diff / 1000);
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-
-        const pad = (n) => String(n).padStart(2, "0");
-
-        updated[item.id] = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
-      });
-
-      setTimeLeft(updated);
+      setTimeNow(Date.now());
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [items]);
+  }, []);
 
   return (
     <section id="section-items" className="no-bottom">
@@ -97,8 +94,6 @@ const NewItems = () => {
           </div>
 
           <div className="col-lg-12">
-
-            {/* 🔥 SWIPER CAROUSEL */}
             <Swiper
               modules={[Navigation, Pagination, Autoplay]}
               spaceBetween={20}
@@ -118,124 +113,117 @@ const NewItems = () => {
                       <Skeleton width="100%" height="250px" />
                     </SwiperSlide>
                   ))
-                : items.map((item) => (
-                    <SwiperSlide key={item.id}>
+                : items.map((item) => {
+                    const timerText = getTimeLeft(item.expiryDate);
 
-                      <div className="nft__item nft-card">
-
-                        {/* IMAGE WRAPPER */}
-                        <div
-                          className="nft-image-wrapper"
-                          style={{ position: "relative" }}
-                        >
-
-                          {/* AUTHOR */}
-                          <Link to={`/author/${item.authorId}`}>
-                            <div
-                              style={{
-                                position: "absolute",
-                                top: "10px",
-                                left: "10px",
-                                width: "42px",
-                                height: "42px",
-                                zIndex: 5,
-                              }}
-                            >
-                              <img
-                                src={item.authorImage}
-                                alt="author"
-                                style={{
-                                  width: "100%",
-                                  height: "100%",
-                                  borderRadius: "50%",
-                                  border: "2px solid white",
-                                  objectFit: "cover",
-                                }}
-                              />
-
-                              <span
+                    return (
+                      <SwiperSlide key={item.id}>
+                        <div className="nft__item nft-card">
+                          <div
+                            className="nft-image-wrapper"
+                            style={{ position: "relative" }}
+                          >
+                            <Link to={`/author/${item.authorId}`}>
+                              <div
                                 style={{
                                   position: "absolute",
-                                  bottom: "-2px",
-                                  right: "-2px",
-                                  background: "#6c5ce7",
-                                  color: "#fff",
-                                  fontSize: "10px",
-                                  borderRadius: "50%",
-                                  padding: "2px 5px",
+                                  top: "10px",
+                                  left: "10px",
+                                  width: "42px",
+                                  height: "42px",
+                                  zIndex: 5,
                                 }}
                               >
-                                ✔
-                              </span>
-                            </div>
-                          </Link>
+                                <img
+                                  src={item.authorImage}
+                                  alt="author"
+                                  style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    borderRadius: "50%",
+                                    border: "2px solid white",
+                                    objectFit: "cover",
+                                  }}
+                                />
 
-                          {/* TIMER */}
-                          {item.expiryDate && (
+                                <span
+                                  style={{
+                                    position: "absolute",
+                                    bottom: "-2px",
+                                    right: "-2px",
+                                    background: "#6c5ce7",
+                                    color: "#fff",
+                                    fontSize: "10px",
+                                    borderRadius: "50%",
+                                    padding: "2px 5px",
+                                  }}
+                                >
+                                  ✔
+                                </span>
+                              </div>
+                            </Link>
+
+                            {timerText && (
+                              <div
+                                style={{
+                                  position: "absolute",
+                                  top: "10px",
+                                  right: "10px",
+                                  background:
+                                    timerText === "Expired"
+                                      ? "#ffdddd"
+                                      : "#f1f2f6",
+                                  color:
+                                    timerText === "Expired"
+                                      ? "#c0392b"
+                                      : "#000",
+                                  padding: "5px 10px",
+                                  borderRadius: "20px",
+                                  fontSize: "12px",
+                                  zIndex: 5,
+                                }}
+                              >
+                                {timerText}
+                              </div>
+                            )}
+
+                            <Link to={`/nft/${item.nftId}`}>
+                              <img
+                                src={item.nftImage}
+                                alt={item.title}
+                                className="lazy nft__item_preview"
+                              />
+                            </Link>
+                          </div>
+
+                          <div className="nft__item_info">
+                            <Link to={`/nft/${item.nftId}`}>
+                              <h4>{item.title}</h4>
+                            </Link>
+
                             <div
                               style={{
-                                position: "absolute",
-                                top: "10px",
-                                right: "10px",
-                                background:
-                                  timeLeft[item.id] === "Expired"
-                                    ? "#ffdddd"
-                                    : "#f1f2f6",
-                                color:
-                                  timeLeft[item.id] === "Expired"
-                                    ? "#c0392b"
-                                    : "#000",
-                                padding: "5px 10px",
-                                borderRadius: "20px",
-                                fontSize: "12px",
-                                zIndex: 5,
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                marginTop: "8px",
                               }}
                             >
-                              {timeLeft[item.id] || "Loading..."}
-                            </div>
-                          )}
+                              <div className="nft__item_price">
+                                {item.price} ETH
+                              </div>
 
-                          {/* IMAGE */}
-                         <Link to={`/nft/${item.nftId}`}>
-                            <img
-                              src={item.nftImage}
-                              alt={item.title}
-                              className="lazy nft__item_preview"
-                            />
-                          </Link>
-                        </div>
-
-                        {/* INFO */}
-                        <div className="nft__item_info">
-                          <Link to={`/nft/${item.nftId}`}>
-                            <h4>{item.title}</h4>
-                          </Link>
-
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                              marginTop: "8px",
-                            }}
-                          >
-                            <div className="nft__item_price">
-                              {item.price} ETH
-                            </div>
-
-                            <div className="nft__item_like">
-                              <i className="fa fa-heart"></i>
-                              <span>{item.likes}</span>
+                              <div className="nft__item_like">
+                                <i className="fa fa-heart"></i>
+                                <span>{item.likes}</span>
+                              </div>
                             </div>
                           </div>
                         </div>
-
-                      </div>
-
-                    </SwiperSlide>
-                  ))}
+                      </SwiperSlide>
+                    );
+                  })}
             </Swiper>
-
           </div>
 
         </div>

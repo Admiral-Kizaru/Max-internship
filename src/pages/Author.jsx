@@ -50,12 +50,63 @@ const Author = () => {
   }, [id]);
 
   if (loading) {
-    return (
-      <div className="container mt90">
-        <h3>Loading author...</h3>
-      </div>
-    );
-  }
+  return (
+    <div id="wrapper">
+      <section className="mt90">
+        <div className="container">
+
+          {/* AUTHOR HEADER SKELETON */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: "40px",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+              <div
+                className="skeleton-box"
+                style={{
+                  width: "120px",
+                  height: "120px",
+                  borderRadius: "50%",
+                }}
+              ></div>
+
+              <div>
+                <div className="skeleton-box" style={{ width: "180px", height: "20px", marginBottom: "10px" }}></div>
+                <div className="skeleton-box" style={{ width: "120px", height: "16px", marginBottom: "8px" }}></div>
+                <div className="skeleton-box" style={{ width: "200px", height: "16px" }}></div>
+              </div>
+            </div>
+
+            <div className="skeleton-box" style={{ width: "120px", height: "40px" }}></div>
+          </div>
+
+          {/* NFT GRID SKELETON */}
+          <div className="row">
+            {new Array(8).fill(0).map((_, i) => (
+              <div key={i} className="col-lg-3 col-md-6 col-sm-6">
+                <div className="nft__item">
+                  <div className="nft__item_wrap">
+                    <div className="skeleton-box image"></div>
+                  </div>
+
+                  <div className="nft__item_info">
+                    <div className="skeleton-box title"></div>
+                    <div className="skeleton-box price"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </section>
+    </div>
+  );
+}
 
   if (error) {
     return (
@@ -126,7 +177,7 @@ const Author = () => {
               <div key={nft.id} className="col-lg-3 col-md-6 col-sm-6">
                 <div className="nft__item">
                   <div className="nft__item_wrap">
-                    <Link to={`/nft/${nft.id}`}>
+                    <Link to={`/nft/${nft.nftId}`}>
                       <img
                         src={nft.nftImage}
                         alt={nft.title}
@@ -136,7 +187,7 @@ const Author = () => {
                   </div>
 
                   <div className="nft__item_info">
-                    <Link to={`/nft/${nft.id}`}>
+                    <Link to={`/nft/${nft.nftId}`}>
                       <h4>{nft.title}</h4>
                     </Link>
 
