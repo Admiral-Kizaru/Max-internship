@@ -38,8 +38,24 @@ const ItemDetails = () => {
         const newItemsData = await newItemsRes.json();
         const authorsData = await authorsRes.json();
 
-        const allItems = [...exploreData, ...newItemsData];
-        const authors = Array.isArray(authorsData) ? authorsData : [authorsData];
+        const authors = Array.isArray(authorsData)
+          ? authorsData
+          : [authorsData];
+
+        const authorNfts = authors.flatMap((author) =>
+          (author.nftCollection || []).map((nft) => ({
+            ...nft,
+            authorId: author.authorId,
+            authorImage: author.authorImage,
+            authorName: author.authorName,
+          }))
+        );
+
+        const allItems = [
+          ...exploreData,
+          ...newItemsData,
+          ...authorNfts,
+        ];
 
         const foundItem = allItems.find(
           (item) => String(item.nftId) === String(id)
@@ -48,18 +64,31 @@ const ItemDetails = () => {
         if (!foundItem) throw new Error("NFT not found");
 
         const matchedAuthor = authors.find(
-          (author) => String(author.authorId) === String(foundItem.authorId)
+          (author) =>
+            String(author.authorId) === String(foundItem.authorId) ||
+            String(author.id) === String(foundItem.authorId)
         );
 
         setNftItem({
           ...foundItem,
-          ownerName: foundItem.ownerName || matchedAuthor?.authorName || "Unknown Owner",
-          ownerImage: foundItem.ownerImage || matchedAuthor?.authorImage || foundItem.authorImage,
-          ownerId: foundItem.ownerId || matchedAuthor?.authorId || foundItem.authorId,
 
-          creatorName: foundItem.creatorName || matchedAuthor?.authorName || "Unknown Creator",
-          creatorImage: foundItem.creatorImage || matchedAuthor?.authorImage || foundItem.authorImage,
-          creatorId: foundItem.creatorId || matchedAuthor?.authorId || foundItem.authorId,
+          ownerName:
+            foundItem.ownerName || matchedAuthor?.authorName || "Lori Hart",
+          ownerImage:
+            foundItem.ownerImage ||
+            matchedAuthor?.authorImage ||
+            foundItem.authorImage,
+          ownerId:
+            foundItem.ownerId || matchedAuthor?.authorId || foundItem.authorId,
+
+          creatorName:
+            foundItem.creatorName || matchedAuthor?.authorName || "Lori Hart",
+          creatorImage:
+            foundItem.creatorImage ||
+            matchedAuthor?.authorImage ||
+            foundItem.authorImage,
+          creatorId:
+            foundItem.creatorId || matchedAuthor?.authorId || foundItem.authorId,
         });
       } catch (err) {
         setError(err.message);
